@@ -19,6 +19,8 @@ declare module '@inertiajs/core' {
             name: string;
             auth: Auth;
             sidebarOpen: boolean;
+            scoresAdminUserId: number;
+            canManageScores: boolean;
             [key: string]: unknown;
         };
     }

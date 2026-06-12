@@ -29,6 +29,12 @@ class WorldCupSyncService
 
         $synced = 0;
 
+        // reset all prediction points and pen points
+        Prediction::query()->update([
+            'points' => null,
+            'pen_points' => null,
+        ]);
+
         foreach ($matches as $match) {
             $game = $this->upsertGame($match);
 
@@ -59,25 +65,6 @@ class WorldCupSyncService
 
         $externalKey = sha1(Str::lower($team1.'|'.$team2.'|'.$date));
 
-        $homeScore = null;
-        $awayScore = null;
-        $penHomeScore = null;
-        $penAwayScore = null;
-        $wentToPenalties = false;
-        $isFinished = false;
-
-        if (isset($match['score']['ft']) && is_array($match['score']['ft'])) {
-            $homeScore = (int) $match['score']['ft'][0];
-            $awayScore = (int) $match['score']['ft'][1];
-            $isFinished = true;
-        }
-
-        if (isset($match['score']['p']) && is_array($match['score']['p'])) {
-            $penHomeScore = (int) $match['score']['p'][0];
-            $penAwayScore = (int) $match['score']['p'][1];
-            $wentToPenalties = true;
-        }
-
         return Game::query()->updateOrCreate(
             ['external_key' => $externalKey],
             [
@@ -87,12 +74,6 @@ class WorldCupSyncService
                 'team1' => $team1,
                 'team2' => $team2,
                 'kickoff_at' => $this->parseKickoff($date, $time),
-                'home_score' => $homeScore,
-                'away_score' => $awayScore,
-                'is_finished' => $isFinished,
-                'went_to_penalties' => $wentToPenalties,
-                'pen_home_score' => $penHomeScore,
-                'pen_away_score' => $penAwayScore,
             ],
         );
     }
@@ -115,6 +96,11 @@ class WorldCupSyncService
         }
 
         return Carbon::parse("{$date} 12:00", 'UTC');
+    }
+
+    public function scoreGamePredictions(Game $game): void
+    {
+        $this->scorePredictionsForGame($game);
     }
 
     private function scorePredictionsForGame(Game $game): void

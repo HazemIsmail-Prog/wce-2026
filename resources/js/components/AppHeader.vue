@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Link, usePage } from '@inertiajs/vue3';
-import { LayoutGrid, Target, Trophy } from '@lucide/vue';
+import { ClipboardPen, LayoutGrid, Target, Trophy } from '@lucide/vue';
 import { computed } from 'vue';
 import AppLogo from '@/components/AppLogo.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
@@ -12,12 +12,14 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import UserMenuContent from '@/components/UserMenuContent.vue';
+import { useCanManageScores } from '@/composables/useCanManageScores';
 import { useCurrentUrl } from '@/composables/useCurrentUrl';
 import { getInitials } from '@/composables/useInitials';
 import { cn } from '@/lib/utils';
 import { dashboard } from '@/routes';
 import { index as predictionsIndex } from '@/routes/predictions';
 import { index as resultsIndex } from '@/routes/results';
+import { index as scoresIndex } from '@/routes/scores';
 import type { BreadcrumbItem, NavItem } from '@/types';
 
 type Props = {
@@ -30,25 +32,38 @@ const props = withDefaults(defineProps<Props>(), {
 
 const page = usePage();
 const auth = computed(() => page.props.auth);
+const canManageScores = useCanManageScores();
 const { whenCurrentUrl } = useCurrentUrl();
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-    {
-        title: 'Predictions',
-        href: predictionsIndex(),
-        icon: Target,
-    },
-    {
-        title: 'Results',
-        href: resultsIndex(),
-        icon: Trophy,
-    },
-];
+const mainNavItems = computed<NavItem[]>(() => {
+    const items: NavItem[] = [
+        {
+            title: 'Dashboard',
+            href: dashboard(),
+            icon: LayoutGrid,
+        },
+        {
+            title: 'Predictions',
+            href: predictionsIndex(),
+            icon: Target,
+        },
+        {
+            title: 'Results',
+            href: resultsIndex(),
+            icon: Trophy,
+        },
+    ];
+
+    if (canManageScores.value) {
+        items.push({
+            title: 'Scores',
+            href: scoresIndex(),
+            icon: ClipboardPen,
+        });
+    }
+
+    return items;
+});
 
 const navLinkClass = (href: NavItem['href']) =>
     cn(

@@ -75,3 +75,20 @@ export type ScoringRule = {
     label: string;
     points: number;
 };
+
+export type AdminGameItem = {
+    id: number;
+    round: string;
+    group_name: string | null;
+    ground: string | null;
+    team1: string;
+    team2: string;
+    kickoff_at: string;
+    is_knockout: boolean;
+    is_finished: boolean;
+    home_score: number | null;
+    away_score: number | null;
+    went_to_penalties: boolean;
+    pen_home_score: number | null;
+    pen_away_score: number | null;
+};

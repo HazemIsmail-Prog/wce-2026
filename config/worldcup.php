@@ -43,4 +43,15 @@ return [
         'winner' => 1,
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Scores Admin
+    |--------------------------------------------------------------------------
+    |
+    | User ID allowed to manually enter match results on the scores page.
+    |
+    */
+
+    'admin_user_id' => (int) env('WORLDCUP_ADMIN_USER_ID', 1),
+
 ];

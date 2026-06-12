@@ -42,6 +42,8 @@ class HandleInertiaRequests extends Middleware
                 'user' => $request->user(),
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
+            'scoresAdminUserId' => config('worldcup.admin_user_id'),
+            'canManageScores' => $request->user()?->id === config('worldcup.admin_user_id'),
         ];
     }
 }
